@@ -1,21 +1,12 @@
 name: VineCoins
 version: '1.0-SNAPSHOT'
-main: me.ipapervn.VineCoins.VineCoins
+main: me.ipapervn.vinecoins.VineCoins
 api-version: '1.21'
 load: STARTUP
 authors: [ ipaperVN, iStudioVN ]
-description: Plugin Currencies for Vine Skyblock
+description: Plugin Currencies for VineSkyblock
 
 commands:
   vinecoins:
     description: main command
-    aliases: [vcoins, vc ]
-    usage: /vinecoins [give/take/set/pay/me]
-
-permissions:
-  vinecoins.admin:
-    description: Administrator commands
-    default: op
-  vinecoins.use:
-    description: Player commands use
-    default: true
+    aliases: [vcoins, vc]

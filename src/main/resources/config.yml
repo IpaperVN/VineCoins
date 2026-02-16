@@ -1,0 +1,7 @@
+database:
+  type: "sqlite"
+  sqlite:
+    file-name: "database.db"
+
+currency:
+  default-balance: 0.0
