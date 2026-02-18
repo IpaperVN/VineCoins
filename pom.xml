@@ -6,7 +6,7 @@
 
     <groupId>me.ipapervn</groupId>
     <artifactId>vinecoins</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.5-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>VineCoins</name>
@@ -43,24 +43,10 @@
                         </goals>
                         <configuration>
                             <createDependencyReducedPom>false</createDependencyReducedPom>
-                            <shadedArtifactAttached>true</shadedArtifactAttached>
-                            <filters>
-                                <filter>
-                                    <artifact>*:*</artifact>
-                                    <excludes>
-                                        <exclude>META-INF/maven/**</exclude>
-                                        <exclude>META-INF/*.MF</exclude>
-                                        <exclude>META-INF/*.SF</exclude>
-                                        <exclude>META-INF/*.DSA</exclude>
-                                        <exclude>META-INF/*.RSA</exclude>
-                                    </excludes>
-                                </filter>
-                            </filters>
                             <relocations>
                                 <relocation>
-                                    <pattern>me.hsgamer.hscore</pattern>
-                                    <shadedPattern>me.ipapervn.vinecoins.core</shadedPattern>
-                                </relocation>
+                                    <pattern>com.zaxxer.hikari</pattern>
+                                    <shadedPattern>me.ipapervn.vinecoins.libs.hikari</shadedPattern>                                </relocation>
                             </relocations>
                         </configuration>
                     </execution>
@@ -113,21 +99,9 @@
             <version>1.21.10-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
-
         <dependency>
-            <groupId>me.hsgamer</groupId>
-            <artifactId>hscore-bukkit-baseplugin</artifactId>
-            <version>${core.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>me.hsgamer</groupId>
-            <artifactId>hscore-bukkit-command-sub</artifactId>
-            <version>${core.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>me.hsgamer</groupId>
-            <artifactId>hscore-bukkit-utils</artifactId>
-            <version>${core.version}</version>
-        </dependency>
+            <groupId>com.zaxxer</groupId>
+            <artifactId>HikariCP</artifactId>
+            <version>4.0.3</version> </dependency>
     </dependencies>
 </project>

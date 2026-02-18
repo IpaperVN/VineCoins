@@ -1,7 +1,25 @@
-database:
-  type: "sqlite"
-  sqlite:
-    file-name: "database.db"
+storage-type: "YAML" # Hoặc "MYSQL"
 
-currency:
-  default-balance: 0.0
+database:
+  host: "localhost"
+  port: 3306
+  database: "minecraft"
+  username: "root"
+  password: ""
+
+mob-rewards:
+  enabled: true
+  rewards:
+    ZOMBIE:
+      amount: 1.5
+      chance: 50.0 # 50% tỉ lệ nhận được tiền
+    SKELETON:
+      amount: 2.0
+      chance: 30.0
+    CREEPER:
+      amount: 5.0
+      chance: 10.0
+    ENDER_DRAGON:
+      amount: 500.0
+      chance: 100.0 # Luôn luôn nhận được
+

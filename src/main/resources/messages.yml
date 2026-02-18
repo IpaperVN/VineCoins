@@ -1,86 +1,49 @@
-prefix: "&8[&bVine&fCoins&8]"
+prefix: "&6[VineCoins] &r"
 
-commands:
+messages:
+  # Tin nhắn gửi cho người chơi khi có thay đổi số dư
+  receive-coin: "&aBạn vừa được cộng &e%amount% &aCoin. Số dư mới: &e%balance% &aCoin."
+  receive-mcoin: "&aBạn vừa được cộng &e%amount% &aMCoin. Số dư mới: &e%balance% &aMCoin."
 
-  give:
-    syntax: "&e/vc give <player> <amount>"
-    description: "Cộng tiền cho người chơi."
-    success: "&aBạn đã cấp &e%amount% coins &acho &f%player%&a."
-    received: "&aBạn vừa nhận được &e%amount% coins &atừ Admin."
-  pay:
-    syntax: "&e/vc pay <player> <amount>"
-    description: "Chuyển tiền cho người chơi khác."
-    error:
-      pay-self: "&cBạn không thể tự chuyển tiền cho chính mình!"
-      not-enough-money: "&cBạn không có đủ tiền để thực hiện giao dịch này!"
-    success:
-      sender: "&aBạn đã chuyển &e%amount% coins &acho &f%target%&a."
-      receiver: "&aBạn nhận được &e%amount% coins &atừ &f%player%&a."
-  reset:
-    syntax: "&e/vc reset <player>"
-    description: "Đặt lại số dư của người chơi về mặc định."
-    success: "&aĐã đặt lại tiền của &f%player% &avề &e%amount%&a."
-    notified: "&cSố dư của bạn đã bị Admin đặt lại về &e%amount%&c!"
-  take:
-    syntax: "&e/vc take <player> <amount>"
-    description: "Trừ tiền của người chơi."
-    error:
-      not-enough: "&cNgười chơi %player% chỉ có %balance% coins, không đủ để trừ %amount%!"
-    success: "&aĐã trừ &e%amount% coins &atừ tài khoản của &f%player%&a."
-    notified: "&cBạn đã bị Admin trừ &e%amount% coins &atừ tài khoản!"
-  set:
-    syntax: "&e/vc set <player> <amount>"
-    description: "Thiết lập chính xác số dư của người chơi."
-    success: "&aĐã thiết lập số dư của &f%player% &athành &e%amount% coins&a."
-    notified: "&eSố dư của bạn đã được Admin điều chỉnh thành &a%amount% coins&e."
+  lost-coin: "&cBạn bị trừ &e%amount% &cCoin. Số dư còn lại: &e%balance% &cCoin."
+  lost-mcoin: "&cBạn bị trừ &e%amount% &cMCoin. Số dư còn lại: &e%balance% &cMCoin."
 
-  reload:
-    description: "&fTải lại cấu hình hệ thống."
-    syntax: "/vc reload"
-    success: "&aĐã tải lại toàn bộ cấu hình thành công!"
+  set-coin: "&6Số dư Coin của bạn đã được thay đổi thành: &e%balance% &6Coin."
+  set-mcoin: "&6Số dư MCoin của bạn đã được thay đổi thành: &e%balance% &6MCoin."
 
-  help:
-    description: "&fXem danh sách hướng dẫn các lệnh."
-    syntax: "/vc help"
+  reset-all: "&cToàn bộ số dư của bạn đã được reset về 0!"
 
-system:
-  reload: "&aĐã nạp lại toàn bộ cấu hình và tin nhắn!"
-  startup: "Plugin đã được kích hoạt thành công! Đang kết nối Database..."
-  command-not-found: "&c[Lỗi] Không tìm thấy lệnh. Hãy kiểm tra lại cấu hình."
-  description_reset: "Đặt lại số dư của người chơi về mặc định."
-  error_create_folder: "KHÔNG THỂ tạo thư mục dữ liệu! Plugin có thể không lưu được tiền."
-  usage_prefix: "&cCách dùng: &f"
-  no_permission: "&cBạn không có quyền làm điều này!"
-  description_give: "Cộng tiền cho người chơi."
-  description_take: "Trừ tiền xu của người chơi."
-  description_set: "Thiết lập số tiền cụ thể cho người chơi."
-  reload_success: "&aPlugin đã được reload thành công!"
-  db_connect_config_error: "Lỗi kết nối Database!"
-  no-console: "&cChỉ người chơi mới có thể thực hiện hành động này!"
-  player-not-found: "&cNgười chơi này không online!"
-  cannot-pay-self: "&cBạn không thể tự chuyển tiền cho chính mình!"
-  invalid-amount: "&cSố tiền phải là một con số hợp lệ và lớn hơn 0!"
-  not-enough-money: "&cBạn không đủ tiền để thực hiện giao dịch này!"
+plugin-enabled: "&aPlugin đã kích hoạt thành công!"
+plugin-disabled: "&cPlugin đã dừng và lưu dữ liệu thành công."
+plugin-auto-saved: "&aPlugin nap lai va dữ liệu thành công."
+plugin-reload-success: "&ePlugin lưu dữ liệu thành công."
 
+# Thông báo lỗi hệ thống
+no-permission: "Bạn không có quyền thực hiện hành động này!"
+player-not-found: "&cKhông tìm thấy người chơi này. Có thể họ đang offline."
+invalid-amount: "&cSố tiền nhập vào không hợp lệ (phải là số dương)!"
 
+balance-check: "&fSố dư &e%type% &fcủa người chơi &b%player% &flà: &a%amount%"
+balance-add-success: "&aĐã cộng thêm &e%amount% %type% &acho &b%player%."
+balance-set-success: "&aĐã đặt lại số dư &e%type% &acủa &b%player% &athành &e%amount%."
+must-player: "phai la nguoi choi"
 
-error:
-  player_never_joined: "&cNgười chơi này chưa từng tham gia server!"
-  invalid_amount_negative: "&cSố tiền thiết lập không được nhỏ hơn 0!"
-  player_not_found: "&cKhông tìm thấy người chơi này online!"
-  invalid_amount: "&cSố tiền phải lớn hơn 0!"
-  not_a_number: "&cVui lòng nhập một con số hợp lệ!"
-  not_enough_money: "&cNgười chơi %player% không đủ tiền! (Hiện có: &e%current%&c)"
+admin-add-success: "&aBạn đã cộng &e%amount% %type% &acho &b%player%&a."
+admin-set-success: "&aBạn đã đặt số dư &e%type% &acủa &b%player% &athành &e%amount%&a."
+admin-take-success: "&aBạn đã trừ &e%amount% %type% &acủa &b%player%&a."
+admin-take-fail: "&cNgười chơi &b%player% &ckhông đủ số dư để trừ!"
 
-admin:
-  reset_success: "&aĐã đặt lại số dư của &f%player% &avề mặc định (&e%amount% xu&a)."
-  set_success: "&aBạn đã thiết lập số dư của &f%player% &athành &e%amount% xu&a."
-  take_success: "&aBạn đã trừ &e%amount% xu &atừ tài khoản của &f%player%&a."
-  give_success: "&aBạn đã cộng &e%amount% xu &acho &f%player%&a."
+command-usage:
+  - ""
+  - "&6&l⭐ VINECOINS HELP ⭐"
+  - "&8» &e/vc coin check [tên] &7- Xem số dư Coin"
+  - "&8» &e/vc mcoin check [tên] &7- Xem số dư MCoin"
+  - "&8» &c/vc <loại> add <tên> <số> &7- Cộng tiền cho người chơi"
+  - "&8» &c/vc <loại> set <tên> <số> &7- Thiết lập số dư"
+  - "&8» &c/vc <loại> take <tên> <số> &7- Trừ tiền người chơi"
+  - "&8» &b/vc reload &7- Tải lại cấu hình hệ thống"
+  - ""
 
-user:
-  money_reset: "&6Số dư của bạn đã được đặt lại về mức khởi đầu."
-  money_set: "&aSố dư của bạn đã được Admin điều chỉnh thành &e%amount% xu&a."
-  money_taken: "&cBạn vừa bị trừ &e%amount% xu &atừ tài khoản bởi Admin."
-  receive_money: "&aBạn vừa nhận được &e%amount% xu &atừ Admin."
+invalid-usage: "&cCách dùng: /vc <loại> <add|set|take> <tên> <số tiền>"
 
+mob-kill-actionbar: "&a+ %amount% MCoin &7(Giết %type%)"

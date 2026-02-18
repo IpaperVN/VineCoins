@@ -1,39 +1,29 @@
 package me.ipapervn.vinecoins.utils;
 
-import me.ipapervn.vinecoins.VineCoins;
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
-
-import java.io.File;
+import org.bukkit.permissions.Permission;
+import org.bukkit.permissions.PermissionDefault;
 
 public class PermissionUtils {
-
-    private static FileConfiguration permConfig;
-
-    public static void setup(VineCoins plugin) {
-        File file = new File(plugin.getDataFolder(), "permissions.yml");
-        if (!file.exists()) {
-            plugin.saveResource("permissions.yml", false);
-        }
-        permConfig = YamlConfiguration.loadConfiguration(file);
-    }
+    // Định nghĩa các Permission dưới dạng hằng số (String) để dùng trong hasPermission()
+    public static final String ADMIN = "vinecoins.admin";
+    public static final String USE = "vinecoins.use";
+    public static final String RELOAD = "vinecoins.reload";
 
     /**
-     * Lấy quyền từ file permissions.yml
-     * @param path Đường dẫn (ví dụ: "admin.reload")
-     * @return Chuỗi permission (ví dụ: "vinecoins.admin.reload")
+     * Hàm này dùng để đăng ký quyền vào hệ thống của Bukkit
+     * (Thay thế cho việc khai báo trong plugin.yml)
      */
-    public static String getPerm(String path) {
-        if (permConfig == null) return "vinecoins.default"; // Quyền dự phòng
-        return permConfig.getString(path, "vinecoins.default");
+    public static void registerAll() {
+        registerPerm(ADMIN, "Quyền quản trị cao nhất của VineCoins", PermissionDefault.OP);
+        registerPerm(USE, "Quyền xem số dư cơ bản", PermissionDefault.TRUE);
+        registerPerm(RELOAD, "Quyền nạp lại cấu hình plugin", PermissionDefault.OP);
     }
 
-    public static void reload() {
-        // Hàm này sẽ được gọi khi bạn dùng lệnh /vc reload
-        // Giúp cập nhật quyền mới mà không cần restart
-        if (permConfig != null) {
-            File file = new File(VineCoins.getPlugin(VineCoins.class).getDataFolder(), "permissions.yml");
-            permConfig = YamlConfiguration.loadConfiguration(file);
+    private static void registerPerm(String name, String description, PermissionDefault defaultValue) {
+        // Kiểm tra xem quyền đã tồn tại chưa để tránh lỗi khi reload
+        if (org.bukkit.Bukkit.getPluginManager().getPermission(name) == null) {
+            Permission perm = new Permission(name, description, defaultValue);
+            org.bukkit.Bukkit.getPluginManager().addPermission(perm);
         }
     }
 }

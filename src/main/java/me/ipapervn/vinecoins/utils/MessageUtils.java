@@ -1,67 +1,70 @@
 package me.ipapervn.vinecoins.utils;
 
 import me.ipapervn.vinecoins.VineCoins;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+import net.md_5.bungee.api.ChatMessageType;
+import net.md_5.bungee.api.chat.TextComponent;
 
-import java.io.File;
+import java.util.List;
+
 
 public class MessageUtils {
+    private static VineCoins plugin;
+    public static void init(VineCoins instance) {
+        plugin = instance; }
+    public static List<String> getStringList(String path) {
+        return plugin.getMessagesConfig().getStringList(path);
+    }
 
-    private static FileConfiguration messagesConfig;
-    private static File messagesFile;
 
-    /**
-     * Khởi tạo file messages.yml
-     * Gọi hàm này trong onEnable của file VineCoins.java
-     */
-    public static void setup(VineCoins plugin) {
-        messagesFile = new File(plugin.getDataFolder(), "messages.yml");
-
-        if (!messagesFile.exists()) {
-            // Tạo file mới từ tài nguyên trong Jar nếu chưa tồn tại
-            plugin.saveResource("messages.yml", false);
-        }
-
-        messagesConfig = YamlConfiguration.loadConfiguration(messagesFile);
+    public static String color(String text) {
+        return ChatColor.translateAlternateColorCodes('&', text);
     }
 
     /**
-     * Lấy tin nhắn và dịch mã màu (& -> §)
+     * Lấy prefix từ file messages.yml
+     */
+    public static String getPrefix() {
+        return VineCoins.getInstance().getMessage("prefix");
+    }
+
+    /**
+     * Gửi tin nhắn từ messages.yml ra Console
      * @param path Đường dẫn trong file messages.yml
-     * @return Tin nhắn đã dịch màu
      */
-    public static String getMsg(String path) {
-        if (messagesConfig == null) return "§8[§bVineCoins§8] "; // Trả về prefix tạm nếu chưa load file
-
-        // Nếu là prefix mà không tìm thấy trong file, trả về giá trị mặc định đẹp mắt
-        if (path.equals("prefix")) {
-            return ChatColor.translateAlternateColorCodes('&',
-                    messagesConfig.getString("prefix", "&8[&bVine&fCoins&8] "));
-        }
-
-        String message = messagesConfig.getString(path);
-        if (message == null) return "§cMissing: " + path;
-
-        return ChatColor.translateAlternateColorCodes('&', message);
+    public static void logConfig(String path) {
+        Bukkit.getConsoleSender().sendMessage(getPrefix() + VineCoins.getInstance().getMessage(path));
     }
 
     /**
-     * Lấy tin nhắn thô (Raw) không dịch mã màu
+     * Gửi tin nhắn từ messages.yml cho người gửi lệnh (Player hoặc Console)
      */
-    public static String getRawMsg(String path) {
-        if (messagesConfig == null) return path;
-        return messagesConfig.getString(path, "Missing: " + path);
+    public static void sendMessage(CommandSender sender, String key, Object... replacements) {
+        // 1. Lấy tin nhắn thô từ file messages.yml
+        String msg = plugin.getMessagesConfig().getString("messages." + key);
+
+        if (msg == null) return;
+
+        // 2. Thực hiện thay thế Placeholder (Đây là bước bạn đang thiếu)
+        // Cứ mỗi cặp (placeholder, giá trị) truyền vào sẽ được replace
+        for (int i = 0; i < replacements.length; i += 2) {
+            if (i + 1 < replacements.length) {
+                String placeholder = replacements[i].toString();
+                String value = replacements[i + 1].toString();
+                msg = msg.replace(placeholder, value);
+            }
+        }
+
+        // 3. Gửi tin nhắn đã được xử lý màu và placeholder
+        sender.sendMessage(getPrefix() + color(msg));
     }
 
-    /**
-     * Hàm dùng để Reload lại tin nhắn khi dùng lệnh /vc reload
-     */
 
-    public static void reload(VineCoins plugin) {
-        if (messagesFile != null) {
-            messagesConfig = YamlConfiguration.loadConfiguration(messagesFile);
-        }
+    public static void sendActionBar(Player player, String message) {
+        if (player == null || message == null) return;
+        player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(color(message)));
     }
 }
