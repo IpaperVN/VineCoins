@@ -40,25 +40,28 @@ public class MessageUtils {
     }
 
     /**
+     * Gửi tin nhắn văn bản thuần (kèm màu) ra Console
+     */
+    public static void logRaw(CommandSender sender, String text) {
+        Bukkit.getConsoleSender().sendMessage(getPrefix() + color(text));
+        sender.sendMessage(getPrefix() + color(text));
+    }
+
+    /**
      * Gửi tin nhắn từ messages.yml cho người gửi lệnh (Player hoặc Console)
      */
-    public static void sendMessage(CommandSender sender, String key, Object... replacements) {
-        // 1. Lấy tin nhắn thô từ file messages.yml
-        String msg = plugin.getMessagesConfig().getString("messages." + key);
+    public static void sendMessage(CommandSender sender, String path, String... placeholders) {
+        String msg = VineCoins.getInstance().getMessage(path);
 
-        if (msg == null) return;
-
-        // 2. Thực hiện thay thế Placeholder (Đây là bước bạn đang thiếu)
-        // Cứ mỗi cặp (placeholder, giá trị) truyền vào sẽ được replace
-        for (int i = 0; i < replacements.length; i += 2) {
-            if (i + 1 < replacements.length) {
-                String placeholder = replacements[i].toString();
-                String value = replacements[i + 1].toString();
-                msg = msg.replace(placeholder, value);
+        // Nếu có placeholder, tiến hành thay thế từng cặp
+        if (placeholders.length >= 2) {
+            for (int i = 0; i < placeholders.length; i += 2) {
+                if (i + 1 < placeholders.length) {
+                    msg = msg.replace(placeholders[i], placeholders[i+1]);
+                }
             }
         }
 
-        // 3. Gửi tin nhắn đã được xử lý màu và placeholder
         sender.sendMessage(getPrefix() + color(msg));
     }
 
