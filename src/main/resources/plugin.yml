@@ -6,6 +6,9 @@ load: STARTUP
 authors: [ ipaperVN, iStudioVN ]
 description: Plugin Currencies for VineSkyblock
 
+softdepend:
+  - PlaceholderAPI
+
 commands:
   vinecoins:
     description: main command

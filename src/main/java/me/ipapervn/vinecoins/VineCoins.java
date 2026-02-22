@@ -7,6 +7,7 @@ import me.ipapervn.vinecoins.commands.MainCommand;
 import me.ipapervn.vinecoins.data.DataManager;
 import me.ipapervn.vinecoins.listeners.MobKillListener;
 
+import me.ipapervn.vinecoins.placeholder.VineCoinsExpansion;
 import me.ipapervn.vinecoins.utils.MessageUtils;
 import me.ipapervn.vinecoins.utils.PermissionUtils;
 import org.bukkit.Bukkit;
@@ -45,6 +46,13 @@ public class VineCoins extends JavaPlugin {
         // 3. Khởi tạo Logic Managers
         this.coinManager = new CoinManager(this);
         this.mCoinManager = new MCoinManager(this);
+
+        if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
+            new VineCoinsExpansion(this).register();
+            getLogger().info("Đã kết nối thành công với PlaceholderAPI!");
+        } else {
+            getLogger().warning("Không tìm thấy PlaceholderAPI! Một số tính năng sẽ bị tắt.");
+        }
 
         // 4. Đăng ký Command
         MainCommand mainCommand = new MainCommand(this);
