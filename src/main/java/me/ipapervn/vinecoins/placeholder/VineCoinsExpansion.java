@@ -62,9 +62,9 @@ public class VineCoinsExpansion extends PlaceholderExpansion {
 
         // Xác định loại tiền
         if (type.equals("coin")) {
-            balance = plugin.getCoinManager().getBalance(player.getUniqueId());
+            balance = plugin.getVineCoinsManager().getCoinBalance(player.getUniqueId());
         } else if (type.equals("mcoin")) {
-            balance = plugin.getMCoinManager().getBalance(player.getUniqueId());
+            balance = plugin.getVineCoinsManager().getMCoinBalance(player.getUniqueId());
         } else {
             return null;
         }

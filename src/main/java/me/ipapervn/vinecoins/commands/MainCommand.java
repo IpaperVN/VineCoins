@@ -27,60 +27,65 @@ public class MainCommand implements CommandExecutor, TabCompleter {
 
         String sub = args[0].toLowerCase();
 
-        // Xử lý lệnh RELOAD
-        if (sub.equals("reload")) {
-            if (!sender.hasPermission(PermissionUtils.RELOAD)) {
-                MessageUtils.sendMessage(sender, "no-permission");
+        switch (sub) {
+            case "reload":
+                if (!sender.hasPermission(PermissionUtils.RELOAD)) {
+                    MessageUtils.sendMessage(sender, "no-permission");
+                    return true;
+                }
+                plugin.reloadPluginConfigs();
+                MessageUtils.sendMessage(sender, "plugin-reload-success");
                 return true;
-            }
-            plugin.reloadPluginConfigs();
-            MessageUtils.sendMessage(sender, "plugin-reload-success");
-            return true;
-        }
 
-        // Xử lý lệnh RESET (Cấu trúc: /vc reset <player> [type])
-        if (sub.equals("reset")) {
-            if (!sender.hasPermission(PermissionUtils.ADMIN)) {
-                MessageUtils.sendMessage(sender, "no-permission");
+            case "reset":
+                if (!sender.hasPermission(PermissionUtils.ADMIN)) {
+                    MessageUtils.sendMessage(sender, "no-permission");
+                    return true;
+                }
+                handleReset(sender, args);
                 return true;
-            }
-            handleReset(sender, args);
-            return true;
-        }
 
-        // Xử lý các lệnh COIN/MCOIN (Cấu trúc: /vc <type> <action> <player> <amount>)
-        if (args.length < 2) {
-            sendHelp(sender);
-            return true;
-        }
+            case "resetall":
+                if (!sender.hasPermission(PermissionUtils.ADMIN)) {
+                    MessageUtils.sendMessage(sender, "no-permission");
+                    return true;
+                }
+                handleResetAll(sender, args);
+                return true;
 
-        boolean isMCoin = sub.equals("mcoin");
-        if (!sub.equals("coin") && !isMCoin) {
-            sendHelp(sender);
-            return true;
-        }
+            case "coin":
+            case "mcoin":
+                if (args.length < 2) {
+                    sendHelp(sender);
+                    return true;
+                }
+                boolean isMCoin = sub.equals("mcoin");
+                String action = args[1].toLowerCase();
 
-        String action = args[1].toLowerCase();
+                switch (action) {
+                    case "check":
+                        handleCheck(sender, args, isMCoin);
+                        break;
+                    case "add":
+                    case "give":
+                        handleModify(sender, args, isMCoin, "add");
+                        break;
+                    case "set":
+                        handleModify(sender, args, isMCoin, "set");
+                        break;
+                    case "take":
+                        handleModify(sender, args, isMCoin, "take");
+                        break;
+                    default:
+                        sendHelp(sender);
+                        break;
+                }
+                return true;
 
-        switch (action) {
-            case "check":
-                handleCheck(sender, args, isMCoin);
-                break;
-            case "add":
-            case "give":
-                handleModify(sender, args, isMCoin, "add");
-                break;
-            case "set":
-                handleModify(sender, args, isMCoin, "set");
-                break;
-            case "take":
-                handleModify(sender, args, isMCoin, "take");
-                break;
             default:
                 sendHelp(sender);
-                break;
+                return true;
         }
-        return true;
     }
 
     private void handleCheck(CommandSender sender, String[] args, boolean isMCoin) {
@@ -91,8 +96,8 @@ public class MainCommand implements CommandExecutor, TabCompleter {
             return;
         }
 
-        double bal = isMCoin ? plugin.getMCoinManager().getBalance(target.getUniqueId())
-                : plugin.getCoinManager().getBalance(target.getUniqueId());
+        double bal = isMCoin ? plugin.getVineCoinsManager().getMCoinBalance(target.getUniqueId())
+                : plugin.getVineCoinsManager().getCoinBalance(target.getUniqueId());
 
         MessageUtils.sendMessage(sender, "balance-check",
                 "%type%", (isMCoin ? "MCoin" : "Coin"),
@@ -124,21 +129,18 @@ public class MainCommand implements CommandExecutor, TabCompleter {
             switch (type) {
                 case "add":
                     if (isMCoin) {
-                        plugin.getMCoinManager().addBalance(uuid, amount);
-                        // Gửi cho người nhận (nếu online)
+                        plugin.getVineCoinsManager().addMCoin(uuid, amount);
                         MessageUtils.sendMessage(target, "messages.receive-coin",
                                 "%amount%", String.valueOf(amount),
-                                "%balance%", String.valueOf(plugin.getCoinManager().getBalance(uuid))
+                                "%balance%", String.valueOf(plugin.getVineCoinsManager().getCoinBalance(uuid))
                         );
                     } else {
-                        plugin.getCoinManager().addBalance(uuid, amount);
-                        // Gửi cho người nhận (nếu online)
+                        plugin.getVineCoinsManager().addCoin(uuid, amount);
                         MessageUtils.sendMessage(target, "messages.receive-coin",
                                 "%amount%", String.valueOf(amount),
-                                "%balance%", String.valueOf(plugin.getCoinManager().getBalance(uuid)));
+                                "%balance%", String.valueOf(plugin.getVineCoinsManager().getCoinBalance(uuid)));
                     }
 
-                    // Thông báo cho Admin (giữ nguyên)
                     MessageUtils.sendMessage(sender, "admin-add-success",
                             "%amount%", String.valueOf(amount), "%type%", typeName, "%player%", target.getName());
 
@@ -149,11 +151,11 @@ public class MainCommand implements CommandExecutor, TabCompleter {
 
                 case "set":
                     if (isMCoin) {
-                        plugin.getMCoinManager().setBalance(uuid, amount);
+                        plugin.getVineCoinsManager().setMCoin(uuid, amount);
                         MessageUtils.sendMessage(target, "messages.set-mcoin",
                                 "%balance%", String.valueOf(amount));
                     } else {
-                        plugin.getCoinManager().setBalance(uuid, amount);
+                        plugin.getVineCoinsManager().setCoin(uuid, amount);
                         MessageUtils.sendMessage(target, "messages.set-coin",
                                 "%balance%", String.valueOf(amount));
                     }
@@ -164,15 +166,15 @@ public class MainCommand implements CommandExecutor, TabCompleter {
 
                 case "take":
                     if (isMCoin) {
-                        plugin.getMCoinManager().takeBalance(uuid, amount);
+                        plugin.getVineCoinsManager().takeMCoin(uuid, amount);
                         MessageUtils.sendMessage(target, "messages.lost-mcoin",
                                 "%amount%", String.valueOf(amount),
-                                "%balance%", String.valueOf(plugin.getMCoinManager().getBalance(uuid)));
+                                "%balance%", String.valueOf(plugin.getVineCoinsManager().getMCoinBalance(uuid)));
                     } else {
-                        plugin.getCoinManager().takeBalance(uuid, amount);
+                        plugin.getVineCoinsManager().takeCoin(uuid, amount);
                         MessageUtils.sendMessage(target, "messages.lost-coin",
                                 "%amount%", String.valueOf(amount),
-                                "%balance%", String.valueOf(plugin.getCoinManager().getBalance(uuid)));
+                                "%balance%", String.valueOf(plugin.getVineCoinsManager().getCoinBalance(uuid)));
                     }
 
                     MessageUtils.sendMessage(sender, "admin-take-success",
@@ -200,19 +202,41 @@ public class MainCommand implements CommandExecutor, TabCompleter {
 
         // /vc reset <player> -> Reset cả hai
         if (args.length == 2) {
-            plugin.getDataManager().resetBalance(uuid); // Hàm reset tổng trong DataManager
+            plugin.getDataManager().resetBalance(uuid);
             sender.sendMessage("§a[VineCoins] Đã reset tất cả tiền của " + target.getName());
         }
-        // /vc reset <player> <type> -> Reset riêng lẻ từng Manager
+        // /vc reset <player> <type> -> Reset riêng lẻ
         else {
             String type = args[2].toLowerCase();
             if (type.equals("mcoin")) {
-                plugin.getMCoinManager().resetBalance(uuid);
+                plugin.getVineCoinsManager().resetMCoin(uuid);
                 sender.sendMessage("§a[VineCoins] Đã reset MCoin của " + target.getName());
             } else {
-                plugin.getCoinManager().resetBalance(uuid);
+                plugin.getVineCoinsManager().resetCoin(uuid);
                 sender.sendMessage("§a[VineCoins] Đã reset Coin của " + target.getName());
             }
+        }
+    }
+
+    private void handleResetAll(CommandSender sender, String[] args) {
+        // /vc resetall -> Reset cả coin và mcoin của tất cả
+        if (args.length == 1) {
+            for (Player p : Bukkit.getOnlinePlayers()) {
+                plugin.getDataManager().resetBalance(p.getUniqueId());
+            }
+            sender.sendMessage("§a[VineCoins] Đã reset tất cả tiền của tất cả người chơi!");
+        }
+        // /vc resetall <type> -> Reset riêng coin hoặc mcoin
+        else {
+            String type = args[1].toLowerCase();
+            for (Player p : Bukkit.getOnlinePlayers()) {
+                if (type.equals("mcoin")) {
+                    plugin.getVineCoinsManager().resetMCoin(p.getUniqueId());
+                } else {
+                    plugin.getVineCoinsManager().resetCoin(p.getUniqueId());
+                }
+            }
+            sender.sendMessage("§a[VineCoins] Đã reset " + (type.equals("mcoin") ? "MCoin" : "Coin") + " của tất cả người chơi!");
         }
     }
 
@@ -235,7 +259,7 @@ public class MainCommand implements CommandExecutor, TabCompleter {
     @Override
     public List<String> onTabComplete(@NotNull CommandSender s, @NotNull Command c, @NotNull String a, @NotNull String[] args) {
         if (args.length == 1) {
-            return StringUtil.copyPartialMatches(args[0], Arrays.asList("coin", "mcoin", "reload", "reset"), new ArrayList<>());
+            return StringUtil.copyPartialMatches(args[0], Arrays.asList("coin", "mcoin", "reload", "reset", "resetall"), new ArrayList<>());
         }
 
         if (args.length == 2) {
@@ -243,7 +267,10 @@ public class MainCommand implements CommandExecutor, TabCompleter {
                 return StringUtil.copyPartialMatches(args[1], Arrays.asList("add", "set", "check", "take"), new ArrayList<>());
             }
             if (args[0].equalsIgnoreCase("reset")) {
-                return null; // Trả về null để hiện danh sách người chơi online
+                return null;
+            }
+            if (args[0].equalsIgnoreCase("resetall")) {
+                return StringUtil.copyPartialMatches(args[1], Arrays.asList("coin", "mcoin"), new ArrayList<>());
             }
         }
 

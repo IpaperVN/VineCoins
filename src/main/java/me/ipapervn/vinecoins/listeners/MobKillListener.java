@@ -40,7 +40,7 @@ public class MobKillListener implements Listener {
 
                 // Nếu số ngẫu nhiên nhỏ hơn hoặc bằng tỉ lệ trong config thì mới được tiền
                 if (randomValue <= chance) {
-                    plugin.getMCoinManager().addBalance(killer.getUniqueId(), amount);
+                    plugin.getVineCoinsManager().addMCoin(killer.getUniqueId(), amount);
 
                     // Lấy tin nhắn từ messages.yml
                     String rawMsg = plugin.getMessagesConfig().getString("mob-kill-actionbar", "&a+ %amount% MCoin &7(%type%)");

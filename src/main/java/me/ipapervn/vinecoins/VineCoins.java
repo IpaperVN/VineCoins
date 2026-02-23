@@ -1,8 +1,7 @@
 package me.ipapervn.vinecoins;
 
-import me.ipapervn.vinecoins.coin.CoinManager;
 import me.ipapervn.vinecoins.listeners.PlayerListener;
-import me.ipapervn.vinecoins.mcoin.MCoinManager;
+import me.ipapervn.vinecoins.manager.VineCoinsManager;
 import me.ipapervn.vinecoins.commands.MainCommand;
 import me.ipapervn.vinecoins.data.DataManager;
 import me.ipapervn.vinecoins.listeners.MobKillListener;
@@ -24,8 +23,7 @@ public class VineCoins extends JavaPlugin {
     private static VineCoins instance;
 
     private DataManager dataManager;
-    private CoinManager coinManager;
-    private MCoinManager mCoinManager;
+    private VineCoinsManager vineCoinsManager;
     private FileConfiguration messagesConfig;
 
 
@@ -43,9 +41,8 @@ public class VineCoins extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new MobKillListener(this), this);
         getServer().getPluginManager().registerEvents(new PlayerListener(this), this);
 
-        // 3. Khởi tạo Logic Managers
-        this.coinManager = new CoinManager(this);
-        this.mCoinManager = new MCoinManager(this);
+        // 3. Khởi tạo Logic Manager
+        this.vineCoinsManager = new VineCoinsManager(this);
 
         if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
             new VineCoinsExpansion(this).register();
@@ -143,6 +140,5 @@ public class VineCoins extends JavaPlugin {
     // --- Getters ---
     public static VineCoins getInstance() { return instance; }
     public DataManager getDataManager() { return dataManager; }
-    public CoinManager getCoinManager() { return coinManager; }
-    public MCoinManager getMCoinManager() { return mCoinManager; }
+    public VineCoinsManager getVineCoinsManager() { return vineCoinsManager; }
 }
